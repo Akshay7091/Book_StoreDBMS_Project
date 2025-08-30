@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Bookstore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Container to hold the background image and content -->
+    <div class="relative bg-cover bg-center h-screen" style="background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto-format&fit=crop');">
+        <!-- Background overlay for better text readability -->
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+        
+        <!-- Main Content -->
+        <main class="relative z-10 h-full flex flex-col justify-center items-center px-4">
+            <div class="bg-black/50 backdrop-blur-md rounded-xl shadow-lg p-8 w-full max-w-md text-center">
+                <h2 class="text-3xl font-bold text-white mb-8">Admin Dashboard</h2>
+                
+                <!-- Action Buttons -->
+                <div class="space-y-4">
+                    <a href="AddBook.html" class="block w-full bg-amber-600/40 text-white font-bold py-3 px-6 rounded-lg hover:bg-amber-500/60 transition-all duration-300 ease-in-out transform hover:scale-105">
+                        Add Books
+                    </a>
+                    <a href="RemoveBook.html" class="block w-full bg-rose-900/40 text-white font-bold py-3 px-6 rounded-lg hover:bg-rose-800/60 transition-all duration-300 ease-in-out transform hover:scale-105">
+                        Remove Books
+                    </a>
+                    <a href="BrowseBooks.html" class="block w-full bg-cyan-700/40 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-600/60 transition-all duration-300 ease-in-out transform hover:scale-105">
+                        Browse Books
+                    </a>
+                    <a href="ViewUsers.html" class="block w-full bg-teal-700/40 text-white font-bold py-3 px-6 rounded-lg hover:bg-teal-600/60 transition-all duration-300 ease-in-out transform hover:scale-105">
+                        View Registered Users
+                    </a>
+                </div>
+
+                <!-- Go Back Link -->
+                <div class="text-center mt-8">
+                    <a href="Home.html" class="text-gray-300 hover:text-white transition-colors duration-300 text-sm">Go back to homepage</a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+
+
+
+

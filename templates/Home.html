@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookstore Name - Online Bookstore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* These styles control the animation */
+        #user-menu {
+            transition: opacity 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform: scale(0.9) translateY(-10px);
+            opacity: 0;
+            pointer-events: none; /* Prevents interaction when invisible */
+        }
+        /* This class is toggled to show the menu */
+        #user-menu.open {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: auto; /* Allows interaction when visible */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Hero Section -->
+    <div class="relative bg-cover bg-center h-screen flex flex-col" style="background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto-format&fit=crop');">
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+        
+        <header class="absolute top-0 left-0 right-0 z-30">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-8">
+                    <a href="#" class="text-white font-bold border-b-2 border-white pb-1">Home</a>
+                    <a href="#" class="text-gray-300 hover:text-white">About</a>
+                    <a href="#" class="text-gray-300 hover:text-white">Contact</a>
+                </div>
+                <div class="relative">
+                    <button id="user-menu-button" class="text-gray-300 hover:text-white focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <div id="user-menu" class="absolute right-0 mt-2 w-56 bg-black/50 backdrop-blur-md rounded-xl shadow-lg py-2 z-20">
+                        <a href="loginUser.html" class="block px-4 py-2 text-sm text-white hover:bg-white/10">Login as User</a>
+                        <a href="loginAdmin.html" class="block px-4 py-2 text-sm text-white hover:bg-white/10">Login as Admin</a>
+                        <a href="register.html" class="block px-4 py-2 text-sm text-white hover:bg-white/10">Register New User</a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="relative z-10 flex-grow flex flex-col justify-center items-center text-center px-4">
+            <h2 class="text-2xl md:text-3xl text-gray-200 tracking-wider font-light">Online Bookstore</h2>
+            <h1 class="text-5xl md:text-7xl font-extrabold my-4 tracking-tight">Reader's Hub</h1>
+            <a href="BrowseBooks.html" class="mt-6 bg-transparent border-2 border-white text-white font-bold py-3 px-10 rounded-full hover:bg-white hover:text-black transition-all duration-300 ease-in-out transform hover:scale-105">
+                Browse Books
+            </a>
+        </main>
+    </div>
+
+    <!-- Featured Books Section -->
+    <section id="featured-books" class="bg-gray-800 py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center text-white mb-12">Top Picks</h2>
+            <div id="featured-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <p class="col-span-full text-center text-gray-400">Loading featured books...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-2">
+        <div class="container mx-auto px-6 text-center text-gray-400">
+            <p>&copy; 2025 Akshayyy. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPT SECTION -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Logic for the user menu dropdown ---
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenu = document.getElementById('user-menu');
+            userMenuButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                // FIX: Only toggle the '.open' class to trigger the animation
+                userMenu.classList.toggle('open');
+            });
+            document.addEventListener('click', function() {
+                // FIX: Only remove the '.open' class, don't add 'hidden'
+                if (userMenu.classList.contains('open')) {
+                    userMenu.classList.remove('open');
+                }
+            });
+
+            // --- Logic to fetch and display featured books ---
+            const gridContainer = document.getElementById('featured-books-grid');
+            const serverBaseUrl = 'http://127.0.0.1:5000'; 
+
+            function fetchFeaturedBooks() {
+                const apiUrl = `${serverBaseUrl}/api/books`;
+
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(books => {
+                        gridContainer.innerHTML = ''; 
+                        if (books && books.length > 0) {
+                            const featuredBooks = books.slice(0, 4);
+                            featuredBooks.forEach(book => {
+                                const card = document.createElement('div');
+                                card.className = 'bg-gray-900/50 rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300';
+                                
+                                const imageUrl = book.image_url 
+                                    ? `${serverBaseUrl}${book.image_url}` 
+                                    : 'https://placehold.co/400x600/333/FFF?text=No+Image';
+
+                                card.innerHTML = `
+                                    <div class="w-full h-80 bg-gray-900 flex items-center justify-center">
+                                        <img src="${imageUrl}" 
+                                             onerror="this.onerror=null; this.src='https://placehold.co/400x600/333/FFF?text=No+Image';"
+                                             alt="Cover of ${book.name}" class="w-full h-full object-contain">
+                                    </div>
+                                    <div class="p-6">
+                                        <h3 class="text-xl font-bold text-white truncate">${book.name}</h3>
+                                        <p class="text-gray-400 mt-1 truncate">${book.author}</p>
+                                        <p class="mt-4 text-lg font-semibold text-white">₹${Number(book.price).toFixed(2)}</p>
+                                    </div>
+                                `;
+                                gridContainer.appendChild(card);
+                            });
+                        } else {
+                            gridContainer.innerHTML = '<p class="col-span-full text-center text-gray-400">No featured books available at the moment.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching featured books:', error);
+                        gridContainer.innerHTML = '<p class="col-span-full text-center text-red-400"><strong>Error:</strong> Could not load featured books. Please ensure the backend book server is running.</p>';
+                    });
+            }
+
+            fetchFeaturedBooks();
+        });
+    </script>
+</body>
+</html>
+

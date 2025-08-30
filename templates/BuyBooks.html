@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Books - Bookstore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="relative bg-cover bg-center min-h-screen" style="background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto-format&fit=crop');">
+        <div class="absolute inset-0 bg-black opacity-60"></div>
+        
+        <main class="relative z-10 container mx-auto px-4 py-12">
+            <div class="bg-black/50 backdrop-blur-md rounded-xl shadow-lg p-8 w-full max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-white mb-2">Available Books</h2>
+                <p class="text-center text-gray-300 mb-6">Select the books and quantities you wish to purchase.</p>
+
+                <p id="response-message" class="text-center mb-4 text-sm"></p>
+
+                <form id="buy-books-form">
+                    <div id="book-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                        <p id="loading-message" class="text-center text-white">Loading books...</p>
+                    </div>
+                    
+                    <div class="mt-8 border-t border-gray-700 pt-6">
+                        <button id="purchase-button" type="submit" disabled class="w-full bg-indigo-600/80 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-500/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Complete Purchase
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-6">
+                    <a href="UserDash.html" class="text-gray-300 hover:text-white transition-colors duration-300 text-sm">Back to Dashboard</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookListContainer = document.getElementById('book-list');
+            const loadingMessage = document.getElementById('loading-message');
+            const form = document.getElementById('buy-books-form');
+            const responseMessage = document.getElementById('response-message');
+            const purchaseButton = document.getElementById('purchase-button');
+            const serverBaseUrl = 'http://127.0.0.1:5000';
+
+            function updatePurchaseButtonState() {
+                const checkedBoxes = document.querySelectorAll('#book-list input[type="checkbox"]:checked');
+                let allValid = true;
+                if (checkedBoxes.length === 0) {
+                    allValid = false;
+                }
+                
+                checkedBoxes.forEach(checkbox => {
+                    const barcode = checkbox.dataset.barcode;
+                    // --- BUG FIX: Changed 'book.barcode' to the correct 'barcode' variable ---
+                    const quantityInput = document.getElementById(`qty-${barcode}`);
+                    const quantity = parseInt(quantityInput.value, 10);
+                    if (isNaN(quantity) || quantity < 1) {
+                        allValid = false;
+                    }
+                });
+
+                purchaseButton.disabled = !allValid;
+            }
+
+            function fetchAndDisplayBooks() {
+                const apiUrl = `${serverBaseUrl}/api/books`;
+                bookListContainer.innerHTML = '';
+                loadingMessage.style.display = 'block';
+
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(books => {
+                        loadingMessage.style.display = 'none';
+                        if (books && books.length > 0) {
+                            books.forEach(book => {
+                                if (book.quantity > 0) {
+                                    const bookElement = document.createElement('div');
+                                    bookElement.className = 'bg-gray-900/50 p-4 rounded-lg flex items-center gap-4';
+                                    
+                                    const imageUrl = book.image_url 
+                                        ? `${serverBaseUrl}${book.image_url}` 
+                                        : 'https://placehold.co/80x120/333/FFF?text=No+Image';
+
+                                    bookElement.innerHTML = `
+                                        <input type="checkbox" data-barcode="${book.barcode}" class="h-5 w-5 rounded bg-gray-700 border-gray-600 text-indigo-500 focus:ring-indigo-600 flex-shrink-0">
+                                        <img src="${imageUrl}" 
+                                             onerror="this.onerror=null; this.src='https://placehold.co/80x120/333/FFF?text=No+Image';"
+                                             alt="Cover of ${book.name}" class="w-16 h-24 object-cover rounded-md flex-shrink-0">
+                                        <div class="flex-grow">
+                                            <h3 class="font-bold text-white">${book.name}</h3>
+                                            <p class="text-sm text-gray-400">Barcode: ${book.barcode} | Stock: ${book.quantity}</p>
+                                        </div>
+                                        <div>
+                                            <label for="qty-${book.barcode}" class="sr-only">Quantity</label>
+                                            <input type="number" id="qty-${book.barcode}" min="1" max="${book.quantity}" placeholder="Qty" class="w-20 px-2 py-1 bg-gray-800/70 border border-gray-700 rounded-md text-white text-center">
+                                        </div>
+                                    `;
+                                    bookListContainer.appendChild(bookElement);
+                                }
+                            });
+                        } else {
+                            bookListContainer.innerHTML = '<p class="text-center text-gray-400">No books are currently in stock.</p>';
+                        }
+                        updatePurchaseButtonState();
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        loadingMessage.style.display = 'none';
+                        bookListContainer.innerHTML = '<p class="text-center text-red-400">Error: Could not load book data. Please ensure the backend server is running.</p>';
+                    });
+            }
+
+            bookListContainer.addEventListener('input', updatePurchaseButtonState);
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const itemsToPurchase = [];
+                const checkedBoxes = document.querySelectorAll('#book-list input[type="checkbox"]:checked');
+                responseMessage.textContent = '';
+
+                checkedBoxes.forEach(checkbox => {
+                    const barcode = checkbox.dataset.barcode;
+                    const quantityInput = document.getElementById(`qty-${barcode}`);
+                    const quantity = parseInt(quantityInput.value, 10);
+                    itemsToPurchase.push({ barcode, quantity });
+                });
+
+                const purchaseApiUrl = `${serverBaseUrl}/api/books/buy`;
+                fetch(purchaseApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: itemsToPurchase }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    responseMessage.textContent = data.message || data.error;
+                    if (data.message) {
+                        responseMessage.className = 'text-center mb-4 text-sm text-green-400';
+                        fetchAndDisplayBooks();
+                    } else {
+                        responseMessage.className = 'text-center mb-4 text-sm text-red-400';
+                    }
+                })
+                .catch(error => {
+                    console.error('Purchase error:', error);
+                    responseMessage.textContent = 'An error occurred. Could not connect to the server.';
+                    responseMessage.className = 'text-center mb-4 text-sm text-red-400';
+                });
+            });
+
+            fetchAndDisplayBooks();
+        });
+    </script>
+</body>
+</html>
+
