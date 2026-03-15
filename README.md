@@ -8,6 +8,51 @@ This project emphasizes **correct state transitions, inventory integrity, and se
 
 ---
 
+## 📸 Application Preview
+
+### Home Preview
+
+![Catalog Screenshot](./screenshots/Home.png)
+![Catalog Screenshot](./screenshots/Home2.png)
+
+Displays the Home Interface.
+
+---
+
+### User Catalog View
+
+![Catalog Screenshot](./screenshots/UserCatalog.png)
+
+Displays available books with metadata, pricing, and cover images.
+Users can browse inventory and initiate purchase flows.
+
+---
+
+### Purchase Flow
+
+![Purchase Screenshot](./screenshots/Buy.png)
+
+Users select quantity and execute purchase requests.
+Inventory updates are reflected immediately after successful transactions.
+
+---
+
+### Admin Dashboard
+
+![Admin Panel Screenshot](./screenshots/AdminDash.png)
+
+Administrators can add new books, remove inventory using barcode identifiers, and monitor registered users.
+
+---
+
+### Add Book (Image Upload)
+
+![Add Book Screenshot](./screenshots/Add.png)
+
+Supports multipart file upload for book cover ingestion with backend validation.
+
+---
+
 ## Overview
 
 Real-world online retail platforms must handle:
