@@ -1,0 +1,27 @@
+{
+  "name": "dbms-project",
+  "version": "1.0.0",
+  "description": "Online Bookstore - Full-Stack Application 📚 This project is a complete online bookstore web application, developed to demonstrate core concepts in database management and full-stack development. It features a Python (Flask) backend, a MySQL database, and a dynamic HTML, CSS, and JavaScript frontend.",
+  "main": "BooksBE.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Akshay7091/Book_StoreDBMS_Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Akshay7091/Book_StoreDBMS_Project/issues"
+  },
+  "homepage": "https://github.com/Akshay7091/Book_StoreDBMS_Project#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "multer": "^2.1.1",
+    "mysql2": "^3.19.1"
+  }
+}
